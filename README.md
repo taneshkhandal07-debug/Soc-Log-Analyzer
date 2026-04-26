@@ -2,6 +2,10 @@
 🛡 SOC Threat Detection & Log Analyzer
 A cybersecurity-focused SOC (Security Operations Center) simulation tool that analyzes system logs, detects suspicious activities, and visualizes threats through an interactive dashboard.
 
+## 🌐 Live Demo
+🚀 Try the App Here:  
+👉 https://soc-log-analyzer.streamlit.app/
+
 Built with a focus on real-world security workflows, this project demonstrates detection engineering, anomaly analysis, and attack simulation.
 
 🚀 Features
