@@ -1,3 +1,5 @@
 streamlit
 pandas
-#pip freeze > requirements.txt
+reportlab
+seaborn
+matplotlib

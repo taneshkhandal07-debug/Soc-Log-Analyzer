@@ -1,7 +1,10 @@
-# Q: SOC Dashboard with Full Cyber Theme UI
+# Q: Final SOC Dashboard with Advanced Features + Cyber UI
 
 import streamlit as st
 import pandas as pd
+import json
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 from modules.parser import parse_log_file
 from modules.detector import detect_brute_force, detect_suspicious_success
@@ -11,6 +14,7 @@ from modules.threat_intel import check_malicious_ips
 from modules.time_anomaly import detect_time_anomaly
 from modules.multi_ip_attack import detect_multi_ip_attack
 from modules.geo_ip import detect_geo_anomaly
+from modules.pdf_report import generate_pdf
 
 from modules.attack_simulator import (
     generate_brute_force,
@@ -29,16 +33,11 @@ if "uploaded" not in st.session_state:
 # ------------------ PAGE CONFIG ------------------
 st.set_page_config(page_title="SOC Log Analyzer", layout="wide")
 
-# ------------------ CYBER THEME CSS ------------------
+# ------------------ CYBER UI ------------------
 st.markdown("""
 <style>
-/* Background */
-body {
-    background-color: #0E1117;
-    color: #FAFAFA;
-}
+body {background-color: #0E1117; color: #FAFAFA;}
 
-/* Tabs */
 .stTabs [role="tab"] {
     font-size: 20px;
     padding: 12px 24px;
@@ -58,7 +57,6 @@ body {
     color: white;
 }
 
-/* Cards */
 .metric-card {
     background-color: #1c1f26;
     padding: 20px;
@@ -67,27 +65,14 @@ body {
     border: 1px solid #2c2f36;
 }
 
-/* Buttons */
 .stButton>button {
     border-radius: 10px;
     background-color: #B22222;
     color: white;
-    border: none;
 }
 
 .stButton>button:hover {
     background-color: #922B21;
-}
-
-/* Inputs */
-.stTextInput>div>div>input {
-    background-color: #1c1f26;
-    color: white;
-}
-
-/* Dataframe */
-.stDataFrame {
-    border: 1px solid #2c2f36;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -97,17 +82,17 @@ st.title("🛡 SOC Threat Detection Dashboard")
 # ------------------ SIDEBAR ------------------
 st.sidebar.title("⚙️ Detection Settings")
 
-enable_brute = st.sidebar.checkbox("Brute Force Detection", value=True)
-enable_suspicious = st.sidebar.checkbox("Suspicious Login Detection", value=True)
-enable_time_anomaly = st.sidebar.checkbox("Time Anomaly Detection", value=True)
-enable_multi_ip = st.sidebar.checkbox("Multi-IP Attack Detection", value=True)
-enable_geo = st.sidebar.checkbox("Geo-IP Anomaly Detection", value=True)
-enable_threat_intel = st.sidebar.checkbox("Threat Intelligence Check", value=True)
+enable_brute = st.sidebar.checkbox("Brute Force Detection", True)
+enable_suspicious = st.sidebar.checkbox("Suspicious Login Detection", True)
+enable_time_anomaly = st.sidebar.checkbox("Time Anomaly Detection", True)
+enable_multi_ip = st.sidebar.checkbox("Multi-IP Attack Detection", True)
+enable_geo = st.sidebar.checkbox("Geo-IP Anomaly Detection", True)
+enable_threat_intel = st.sidebar.checkbox("Threat Intelligence Check", True)
 
 # ------------------ FILE UPLOAD ------------------
 st.subheader("📂 Upload Log File (Required First)")
 
-uploaded_file = st.file_uploader("Upload your log file", type=["log", "txt"])
+uploaded_file = st.file_uploader("Upload log file", type=["log", "txt"])
 
 if uploaded_file:
     with open("data/uploaded.log", "wb") as f:
@@ -116,7 +101,7 @@ if uploaded_file:
     st.session_state.logs = parse_log_file("data/uploaded.log")
     st.session_state.uploaded = True
 
-    st.success("✅ File uploaded successfully!")
+    st.success("✅ File uploaded successfully")
 
 # ------------------ ATTACK SIMULATOR ------------------
 st.subheader("🧪 Attack Simulator")
@@ -130,9 +115,8 @@ col1, col2 = st.columns(2)
 
 with col1:
     if st.button("⚡ Generate Attack Logs"):
-
         if not st.session_state.uploaded:
-            st.error("❌ Please upload a log file first!")
+            st.error("❌ Upload a file first")
             st.stop()
 
         if attack_type == "All Attacks":
@@ -156,7 +140,7 @@ with col1:
             logs_data = generate_time_anomaly()
             filename = "data/time_anomaly.log"
 
-        elif attack_type == "Geo Anomaly":
+        else:
             logs_data = generate_geo_anomaly()
             filename = "data/geo_anomaly.log"
 
@@ -164,15 +148,14 @@ with col1:
             for line in logs_data:
                 f.write(line + "\n")
 
-        st.success(f"✅ {attack_type} logs generated!")
-
         st.session_state.logs = parse_log_file(filename)
+        st.success("✅ Attack logs generated")
 
 with col2:
     if st.button("🧹 Clear Logs"):
         st.session_state.logs = None
         st.session_state.uploaded = False
-        st.success("Logs cleared!")
+        st.success("Logs cleared")
 
 # ------------------ MAIN DASHBOARD ------------------
 if st.session_state.logs:
@@ -222,11 +205,19 @@ if st.session_state.logs:
         col2.markdown(f"<div class='metric-card'><h2>{high}</h2><p>High Risk</p></div>", unsafe_allow_html=True)
         col3.markdown(f"<div class='metric-card'><h2>{medium}</h2><p>Medium Risk</p></div>", unsafe_allow_html=True)
 
+        # 🔥 Top IPs
+        st.subheader("🔥 Top Attacking IPs")
+
+        df = pd.DataFrame(risk_results)
+        if not df.empty:
+            top_ips = df["ip"].value_counts().head(5)
+            st.bar_chart(top_ips)
+
     # ------------------ ALERTS ------------------
     with tab2:
         st.subheader("🚨 Threat Alerts")
 
-        search = st.text_input("🔍 Search by IP or User")
+        search = st.text_input("🔍 Search by IP/User")
 
         col1, col2 = st.columns(2)
         risk_filter = col1.selectbox("Risk", ["All", "High", "Medium", "Low"])
@@ -249,13 +240,20 @@ if st.session_state.logs:
 
         for item in filtered:
             msg = f"IP: {item['ip']} | Type: {item['type']} | Risk: {item['risk']}"
-
             if item["risk"] == "High":
                 st.error(msg)
             elif item["risk"] == "Medium":
                 st.warning(msg)
             else:
                 st.info(msg)
+
+        # 🔥 Export filtered logs
+        if filtered:
+            st.download_button(
+                "📤 Export Filtered Logs",
+                data=json.dumps(filtered, indent=2, default=str),
+                file_name="filtered_logs.json"
+            )
 
     # ------------------ LOGS ------------------
     with tab3:
@@ -264,12 +262,29 @@ if st.session_state.logs:
         df_logs = pd.DataFrame(logs)
         st.dataframe(df_logs, use_container_width=True)
 
-        st.subheader("📈 Attack Timeline")
-
         df_logs["timestamp"] = pd.to_datetime(df_logs["timestamp"])
-        timeline = df_logs.groupby(df_logs["timestamp"].dt.minute).size()
 
+        st.subheader("📈 Timeline")
+        timeline = df_logs.groupby(df_logs["timestamp"].dt.minute).size()
         st.line_chart(timeline)
+
+        # 🔥 Heatmap
+        st.subheader("🔥 Attack Heatmap")
+
+        df_logs["hour"] = df_logs["timestamp"].dt.hour
+        df_logs["minute"] = df_logs["timestamp"].dt.minute
+
+        heatmap_data = df_logs.pivot_table(index="hour", columns="minute", aggfunc="size", fill_value=0)
+
+        fig, ax = plt.subplots()
+        sns.heatmap(heatmap_data, ax=ax)
+        st.pyplot(fig)
+
+        # 🔥 User activity
+        st.subheader("👤 User Activity")
+
+        if "user" in df_logs.columns:
+            st.bar_chart(df_logs["user"].value_counts())
 
     # ------------------ REPORT ------------------
     with tab4:
@@ -278,5 +293,14 @@ if st.session_state.logs:
         report = generate_report(risk_results)
         st.text_area("Report Output", report, height=300)
 
+        # PDF download
+        if st.button("📥 Download PDF Report"):
+            file_path = generate_pdf(report)
+            with open(file_path, "rb") as f:
+                st.download_button("Download PDF", f, "soc_report.pdf")
+
+        # TXT download
+        st.download_button("📄 Download TXT Report", report, "soc_report.txt")
+
 else:
-    st.info("👆 Upload a log file to begin analysis")
+    st.info("👆 Upload a log file to begin")
