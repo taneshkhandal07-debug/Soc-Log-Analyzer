@@ -1,16 +1,19 @@
 # 🛡 SOC Threat Detection & Log Analyzer
 
-A **cybersecurity-focused SOC (Security Operations Center) simulation tool** that analyzes system logs, detects suspicious activities, and visualizes threats through an interactive dashboard.
-
-## 🌐 Live Demo
-🚀 Try the App Here:  
+🚀 **Live Demo:**
 👉 https://soc-log-analyzer.streamlit.app/
-
-Built with a focus on **real-world security workflows**, this project demonstrates detection engineering, anomaly analysis, and attack simulation.
 
 ---
 
-## 🚀 Features
+## 🔥 Overview
+
+A **cybersecurity-focused SOC (Security Operations Center) simulation platform** that analyzes log files, detects attack patterns, and provides actionable threat insights through an interactive dashboard.
+
+This project replicates **real-world SOC workflows** including detection engineering, anomaly analysis, threat intelligence, and incident reporting.
+
+---
+
+## ⚡ Key Features
 
 ### 🔍 Threat Detection Engine
 
@@ -22,62 +25,62 @@ Built with a focus on **real-world security workflows**, this project demonstrat
 
 ---
 
-### 🧠 Risk Intelligence
+### 🧠 Risk & Threat Intelligence
 
 * Automated risk classification:
 
   * 🟢 Low
   * 🟡 Medium
   * 🔴 High
-* Threat Intelligence enrichment (malicious IP detection)
+* Malicious IP enrichment (Threat Intelligence)
 
 ---
 
-### 🧪 Attack Simulator
+### 🧪 Smart Attack Simulator
 
-* Generate synthetic attack logs for:
+* Generate synthetic logs for:
 
   * Brute Force
   * Multi-IP Attacks
   * Time Anomalies
   * Geo Anomalies
-  * 🔥 Combined attack scenarios
-* Enables testing and validation of detection pipeline
+  * Combined attack scenarios
+* Useful for testing detection pipelines
 
 ---
 
-### 📊 Interactive Dashboard
+### 📊 Advanced Analytics Dashboard
 
-* Clean SOC-style UI (Dark Cyber Theme)
+* Cyber-themed interactive UI
 * Tabs:
 
   * 📊 Overview
   * 🚨 Alerts
   * 📄 Logs
   * 🧾 Reports
-* Real-time filtering:
-
-  * By risk level
-  * By attack type
-* 🔍 Search functionality (IP/User)
-* 📈 Attack timeline visualization
 
 ---
 
-### 📄 Incident Reporting
+### 📈 Visualization & Insights
 
-* Auto-generated structured reports
-* Includes:
+* 🔥 Top Attacking IPs Chart
+* 📊 Attack Timeline
+* 🔥 Attack Frequency Heatmap
+* 👤 User Activity Tracking
 
-  * Attack type
-  * Risk level
-  * Recommendations
+---
+
+### 📤 Export & Reporting
+
+* 📄 Download incident report (TXT)
+* 📥 Download report as PDF
+* 📤 Export filtered logs (JSON)
 
 ---
 
 ## 🏗 Project Structure
 
-```
+```bash
 soc-log-analyzer/
 │
 ├── modules/
@@ -90,6 +93,7 @@ soc-log-analyzer/
 │   ├── multi_ip_attack.py
 │   ├── geo_ip.py
 │   ├── attack_simulator.py
+│   ├── pdf_report.py
 │
 ├── data/
 ├── app.py
@@ -101,44 +105,44 @@ soc-log-analyzer/
 
 ## ⚙️ Installation & Setup
 
-### 1. Clone Repository
+### 1️⃣ Clone the repository
 
-```
-git clone https://github.com/<your-username>/soc-log-analyzer.git
-cd soc-log-analyzer
+```bash
+git clone https://github.com/<your-username>/Soc-Log-Analyzer.git
+cd Soc-Log-Analyzer
 ```
 
 ---
 
-### 2. Create Virtual Environment
+### 2️⃣ Create virtual environment
 
-```
+```bash
 python -m venv venv
 venv\Scripts\activate
 ```
 
 ---
 
-### 3. Install Dependencies
+### 3️⃣ Install dependencies
 
-```
+```bash
 pip install -r requirements.txt
 ```
 
 ---
 
-### 4. Run the App
+### 4️⃣ Run the application
 
-```
+```bash
 streamlit run app.py
 ```
 
 ---
 
-## 🧪 Usage
+## 🧪 How to Use
 
 1. Upload a `.log` file
-2. Select detection settings (sidebar)
+2. Select detection settings
 3. (Optional) Generate attack logs using simulator
 4. Analyze:
 
@@ -155,44 +159,31 @@ streamlit run app.py
 * Anomaly Detection
 * SOC Workflow Simulation
 * Threat Intelligence Integration
+* Data Visualization & Analytics
 * Attack Simulation & Validation
-
----
-
-## 💡 Why This Project?
-
-This project was built to simulate how modern security teams:
-
-* Monitor logs
-* Detect attacks
-* Analyze suspicious behavior
-* Respond to threats
-
-It bridges the gap between **academic concepts and real-world cybersecurity practices**.
 
 ---
 
 ## 🚀 Future Enhancements
 
 * Real-time log streaming
+* Machine learning-based anomaly detection
 * Integration with external threat intelligence APIs
-* Machine Learning-based anomaly detection
-* User authentication & role-based access
-* Deployment on cloud platforms
+* Role-based authentication system
+* Cloud deployment scaling
 
 ---
 
 ## 👨‍💻 Author
 
 **Tanesh Khandal**
-
-* 🎓 JECRC University
-* 💻 Aspiring Cybersecurity & Tech Enthusiast
+🎓 JECRC University
+💻 Cybersecurity & Tech Enthusiast
 
 ---
 
-## ⭐ If you found this useful
+## ⭐ Support
 
-Give this repo a ⭐ and feel free to fork & improve!
+If you found this project useful, consider giving it a ⭐ and sharing it!
 
 ---
